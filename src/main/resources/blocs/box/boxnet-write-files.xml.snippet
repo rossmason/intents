@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+           xmlns:boxnet="http://www.mulesoft.org/schema/mule/boxnet"
+           xmlns:http="http://www.mulesoft.org/schema/mule/http"
+           xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           version="CE-3.3.0" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/boxnet http://www.mulesoft.org/schema/mule/boxnet/1.0/mule-boxnet.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/3.3/mule-http.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.3/mule.xsd">
+
+    <boxnet:config name="Boxnet" apiKey="${boxnet.api.key}" doc:name="Boxnet"/>
+
+    <sub-flow name="Write-files-to-Box" doc:name="Write-files-to-Box">
+        <expression-filter expression="#[sessionVars['files'].size() &gt; 0]" doc:name="Files to upload?"/>
+        <boxnet:upload-files config-ref="Boxnet" doc:name="Write Files to Box.net">
+            <boxnet:paths ref="#[sessionVars['files']]"/>
+        </boxnet:upload-files>
+    </sub-flow>
+</mule>

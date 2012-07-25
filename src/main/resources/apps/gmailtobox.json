@@ -1,0 +1,26 @@
+{
+    "name":"Gmail Photos to Box",
+    "app-version" : "1.0",
+    "platform-version" : "CE-3.3.0",
+    "blocs":[
+        {
+            "name":"Gmail Subscribe",
+            "params":{
+                "gmail.username":"xxx",
+                "gmail.password":"xxx"
+            }
+        },
+        {
+            "name":"Save Attachments",
+            "params":{
+                "save.attachment.types":"image/*"
+            }
+        },
+        {
+            "name":"Box.Net write Files",
+            "params":{
+                "box.api.key":"xxx"
+            }
+        }
+    ]
+}

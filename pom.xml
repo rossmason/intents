@@ -1,0 +1,151 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.mule.intents</groupId>
+    <artifactId>mule-intents</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>Mule Intents</name>
+    <description>New Intents-based integration model on top of Mule</description>
+    <url>http://www.mulesoft.org/muleforge/mule-intents</url>
+
+    <properties>
+         <mule.version>3.3.0</mule.version>
+         <!--<spring.version>3.0.5.RELEASE</spring.version>-->
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-client</artifactId>
+            <version>${mule.version}</version>
+            <!--<scope>provided</scope>-->
+        </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-spring-config</artifactId>
+            <version>${mule.version}</version>
+            <!--<scope>provided</scope>-->
+        </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-json</artifactId>
+            <version>${mule.version}</version>
+            <!--<scope>provided</scope>-->
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-boxnet</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-beans</artifactId>-->
+            <!--<version>${spring.version}</version>-->
+            <!--&lt;!&ndash;<scope>provided</scope>&ndash;&gt;-->
+        <!--</dependency>-->
+
+        <!-- Testing Dependencies -->
+        <dependency>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-vm</artifactId>
+            <version>${mule.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-functional</artifactId>
+            <version>${mule.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-scripting</artifactId>
+            <version>${mule.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>it</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.9</version>
+                        <executions>
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+      </profiles>
+  
+    <build>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.8</version>
+          <executions>
+            <execution>
+              <id>attach-javadocs</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <docletArtifact>
+              <groupId>org.mule.tools.devkit</groupId>
+              <artifactId>mule-devkit-doclet</artifactId>
+              <version>${mule.devkit.version}</version>
+            </docletArtifact>
+            <doclet>org.mule.devkit.doclet.Doclava</doclet>
+            <bootclasspath>${sun.boot.class.path}</bootclasspath>
+            <additionalparam><!-- -federate JDK http://download.oracle.com/javase/6/docs/api/index.html? 
+                -federationxml JDK http://doclava.googlecode.com/svn/static/api/openjdk-6.xml -->
+              -hdf project.artifactId "${project.artifactId}"
+              -hdf project.groupId "${project.groupId}"
+              -hdf project.version "${project.version}"
+              -hdf project.name "${project.name}"
+              -hdf project.repo.name
+              "${project.distributionManagement.repository.name}"
+              -hdf project.repo.id "${project.distributionManagement.repository.id}"
+              -hdf project.repo.url
+              "${project.distributionManagement.repository.url}"
+              -hdf project.snapshotRepo.name
+              "${project.distributionManagement.snapshotRepository.name}"
+              -hdf project.snapshotRepo.id
+              "${project.distributionManagement.snapshotRepository.id}"
+              -hdf project.snapshotRepo.url
+              "${project.distributionManagement.snapshotRepository.url}"
+              -d ${project.build.directory}/apidocs
+              -markdown redis ${basedir}/doc/Overview.md "Overview"
+            </additionalparam>
+            <useStandardDocletOptions>false</useStandardDocletOptions>
+            <additionalJOption>-J-Xmx1024m</additionalJOption>
+          </configuration>
+        </plugin>
+      </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>mulesoft-releases</id>
+            <name>MuleSoft Releases Repository</name>
+            <url>http://repository.mulesoft.org/releases/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+
+</project>

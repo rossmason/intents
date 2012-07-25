@@ -1,0 +1,26 @@
+{
+   "name" : "Gmail Subscribe",
+   "description" : "Read email from a gmail account",
+   "intent" : "subscribe",
+   "params" : [
+       { "name" : "gmail.username",
+       "description" : "your gmail email address",
+       "optional" : "false" } ,
+       { "name" : "gmail.password",
+       "description" : "your gmail account password",
+       "optional" : "false" },
+       { "name" : "gmail.label",
+       "description" : "Listen to emails with a specific label",
+       "optional" : "true",
+       "default" : "INBOX" }, 
+       { "name" : "gmail.archive.messages",
+       "description" : "Should read messages be automatically archived",
+       "optional" : "true" ,
+       "default" : "false"} ],
+   "snippets" : [
+       { "name" : "Listen on Gmail",
+         "description" : "Creates a message source from a Gmail Inbox",
+         "output-type" : "application/MuleMessage+email", 
+         "snippet-uri" : "gmail-subscribe.xml.snippet"
+       } ]
+    }
