@@ -2,18 +2,17 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
            xmlns:http="http://www.mulesoft.org/schema/mule/http"
            xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
-           xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            version="CE-3.3.0" xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/3.3/mule-http.xsd
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/3.3/mule-scripting.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.3/mule.xsd ">
 
-    <sub-flow name="Extract-Attachments" doc:name="Extract-Attachments">
-        <expression-transformer doc:name="Extract attachments">
+    <sub-flow name="Extract-Attachments" >
+        <expression-transformer >
             <return-argument evaluator="attachments-list" expression="*"/>
         </expression-transformer>
-        <scripting:component doc:name="Save Attachments">
+        <scripting:component>
             <scripting:script engine="Groovy">
                 <property key="attachmentFilter" value="${save.attachment.types}"/>
                 <scripting:text><![CDATA[def files = [];
@@ -45,10 +44,11 @@ org.mule.routing.filters.WildcardFilter filter = new org.mule.routing.filters.Wi
         log.warn("Attachment rejected: " + ct);
      }
  }
-message.setSessionProperty("files", files);
-result = payload;]]></scripting:text>
+//message.setSessionProperty("files", files);
+message.setOutboundProperty("Content-Type", "text/uri-list");
+result = files;]]></scripting:text>
             </scripting:script>
         </scripting:component>
-        <logger message="Files to upload: #[sessionVars['files']]" level="INFO" doc:name="Logger"/>
+        <logger message="Files to upload: #[sessionVars['files']]" level="INFO"/>
     </sub-flow>
 </mule>

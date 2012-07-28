@@ -1,20 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
-           xmlns:boxnet="http://www.mulesoft.org/schema/mule/boxnet"
-           xmlns:http="http://www.mulesoft.org/schema/mule/http"
-           xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
-           xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           version="CE-3.3.0" xsi:schemaLocation="
-http://www.mulesoft.org/schema/mule/boxnet http://www.mulesoft.org/schema/mule/boxnet/1.0/mule-boxnet.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/3.3/mule-http.xsd
-http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.3/mule-core.xsd
-http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/3.3/mule-scripting.xsd">
+      xmlns:boxnet="http://www.mulesoft.org/schema/mule/boxnet"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+      xmlns:objectstore="http://www.mulesoft.org/schema/mule/objectstore"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:spring="http://www.springframework.org/schema/beans"
+      version="CE-3.3.0" xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/objectstore http://www.mulesoft.org/schema/mule/objectstore/current/mule-objectstore.xsd
+http://www.mulesoft.org/schema/mule/boxnet http://www.mulesoft.org/schema/mule/boxnet/current/mule-boxnet.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule-core.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
-    <flow name="Boxnet-init-Authenticate" doc:name="Boxnet-init-Authenticate">
-        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="boxauth" doc:name="HTTP"/>
-        <boxnet:get-ticket config-ref="Boxnet" doc:name="Get Ticket"/>
-        <scripting:component doc:name="Open Browser and Auth">
+    <spring:beans>
+        <spring:bean name="id-store" class="org.mule.util.store.PartitionedPersistentObjectStore"/>
+    </spring:beans>
+
+    <objectstore:config name="default" objectStore-ref="id-store" />
+
+    <boxnet:config name="Boxnet" apiKey="${boxnet.api.key}" restoreAuthTokenFlow="restore" saveAuthTokenFlow="save"/>
+
+    <flow name="restore">
+        <objectstore:retrieve key="flowVars['currentUserId']"/>
+    </flow>
+
+    <flow name="save">
+        <objectstore:store key="flowVars['currentUserId']" value-ref="#[payload]"/>
+    </flow>
+
+    <flow name="Boxnet-init-Authenticate" >
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="boxauth"/>
+        <boxnet:get-ticket config-ref="Boxnet"/>
+        <scripting:component>
             <scripting:script engine="Groovy">
                 <scripting:text><![CDATA[url = "https://www.box.net/api/1.0/auth/" + payload;
 if( !java.awt.Desktop.isDesktopSupported() ) {

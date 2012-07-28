@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+           xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           version="CE-3.3.0" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.3/mule.xsd">
+
+    <sfdc:config name="salesforce-default" username="${salesforce.username}" password="${salesforce.password}" securityToken="${salesforce.securityToken}"/>
+
+    <flow name="main">
+        <sfdc:subscribe-topic config-ref="salesforce-default" topic="\${salesforce.topic}"/>
+    </flow>
+
+</mule>

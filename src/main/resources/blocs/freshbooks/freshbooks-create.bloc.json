@@ -1,0 +1,34 @@
+{
+    "name":"FreshBooks Client",
+    "description":"Work with client entities in Freshbooks",
+    "intent":"create",
+    "input-types":["application/mule.freshbooks+client"],
+    "output-types":["application/mule.freshbooks+client"],
+    "params":[
+        {
+            "name":"freshbooks.authToken",
+            "description":"Your security token for accessing the Freshbooks API"
+        } ,
+        {
+            "name":"freshbooks.apiUrl",
+            "description":"The API URL to use",
+            "default" : "https://mulesoft.freshbooks.com/api/2.1/xml-in"
+        }
+    ],
+    "snippets":[
+        {
+            "name":"Create Client",
+            "role":"main",
+            "description":"Create a new Client in FreshBooks",
+            "snippet-uri":"salesforce-subscribe-topic.xml.snippet"
+        }
+    ],
+    "data-types":[
+        {
+            "type":"application/mule.freshbooks+client",
+            "description":"A Client in FreshBooks",
+            "schema":"client.xsd",
+            "schema-type":"xsd"
+        }
+    ]
+}

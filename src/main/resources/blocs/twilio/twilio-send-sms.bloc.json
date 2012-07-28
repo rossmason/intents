@@ -1,0 +1,39 @@
+{
+    "name":"Send SMS",
+    "description":"Send an SMS to a phone with  Twilio",
+    "intent":"publish",
+    "input-types":["text/*"],
+    "output-types":["text/*"],
+    "params":[
+        {
+            "name":"twilio.phoneNumber",
+            "description":"Your Twilio phone number. The SMS will be sent with this number"
+        } ,
+        {
+            "name":"twilio.accountSid",
+            "description":"your Twilio account security Id, this is used in conjunction with a security code obtained from Twilio"
+        },
+        {
+            "name":"twilio.authToken",
+            "description":"Your Twilio Auth token issued from the Twilio App sign up process"
+        },
+        {
+            "name":"twilio.toPhoneNumber",
+            "description":"The number to send the SMS message to",
+            "type" : "phoneNumber"
+        },
+        {
+            "name":"twilio.message",
+            "description":"The number to send the SMS message to",
+            "default" : "#[payload]"
+        }
+    ],
+    "snippets":[
+        {
+            "name":"Send SMS",
+            "role":"main",
+            "description":"Sends an SMS message",
+            "snippet-uri":"twilio-send-sms.xml.snippet"
+        }
+    ]
+}

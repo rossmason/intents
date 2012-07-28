@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+           xmlns:twilio="http://www.mulesoft.org/schema/mule/twilio"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           version="CE-3.3.0" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/twilio http://www.mulesoft.org/schema/mule/twilio/1.0/mule-twilio.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.3/mule.xsd">
+
+    <twilio:config name="twilio-default" accountSid="${twilio.accountSid}" authToken="${twilio.authToken}"/>
+
+    <sub-flow name="Send SMS Message">
+        <twilio:send-sms-message config-ref="twilio-default" accountSid="${twilio.accountSid}" body="${twilio.message}" from="${twilio.phoneNumber}" to="${twilio.toPhoneNumber}"/>
+    </sub-flow>
+
+</mule>

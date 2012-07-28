@@ -1,0 +1,37 @@
+{
+    "name":"Salesforce Create Topic",
+    "description":"Create a real-time Salesforce topic",
+    "intent":"create",
+    "input-types":["*/*"],
+    "output-types":["*/*"],
+    "params":[
+        {
+            "name":"salesforce.username",
+            "description":"Your salesforce username, often it is your email address"
+        } ,
+        {
+            "name":"salesforce.password",
+            "description":"your Salesforce account password"
+        },
+        {
+            "name":"salesforce.securityToken",
+            "description":"Your security token for accessing the Salesforce API"
+        },
+        {
+            "name":"salesforce.topic",
+            "description":"The topic name to create in Salesforce"
+        },
+        {
+            "name":"salesforce.query",
+            "description":"The select query that defines what data will be received on a topic"
+        }
+    ],
+    "snippets":[
+        {
+            "name":"Create Topic",
+            "description":"Subscribe to a Salesforce Topic",
+            "role" : "main",
+            "snippet-uri":"salesforce-create-topic.xml.snippet"
+        }
+    ]
+}

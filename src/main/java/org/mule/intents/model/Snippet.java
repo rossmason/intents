@@ -17,9 +17,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -46,12 +43,6 @@ public class Snippet
     
     @JsonProperty("snippet-uri")
     private String snippetUri;
-
-    @JsonProperty("input-types")
-    private List<String> inputTypes = new ArrayList<String>();
-
-    @JsonProperty("output-type")
-    private String outputType;
 
     public Snippet()
     {
@@ -107,8 +98,8 @@ public class Snippet
     
     public Document loadSnippet() throws IOException, DocumentException
     {
-        File f = new File(parent.getRoot(), getSnippetUri());
-        return DocumentHelper.parseText(IOUtils.toString(removeDocNamespace(f)));
+        File f = new File(parent.getDefinitionFile().getParentFile(), getSnippetUri());
+        return DocumentHelper.parseText(IOUtils.toString(new FileInputStream(f)));
     }
 
     //TODO figure out to remove this junk
@@ -129,26 +120,6 @@ public class Snippet
         return new ByteArrayInputStream(string.toString().getBytes());
     }
 
-    public List<String> getInputTypes()
-    {
-        return inputTypes;
-    }
-
-    public void setInputTypes(List<String> inputTypes)
-    {
-        this.inputTypes = inputTypes;
-    }
-
-    public String getOutputType()
-    {
-        return outputType;
-    }
-
-    public void setOutputType(String outputType)
-    {
-        this.outputType = outputType;
-    }
-
     public Bloc getParent()
     {
         return parent;
@@ -158,4 +129,6 @@ public class Snippet
     {
         this.parent = parent;
     }
+
+
 }

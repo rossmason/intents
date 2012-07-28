@@ -1,0 +1,33 @@
+{
+    "name":"Salesforce Subscribe",
+    "description":"Subscribe to a Salesforce topic throw the streaming API",
+    "intent":"subscribe",
+    "output-types":["application/mule.message+map"],
+
+    "params":[
+        {
+            "name":"salesforce.username",
+            "description":"Your salesforce username, often it is your email address"
+        } ,
+        {
+            "name":"salesforce.password",
+            "description":"your Salesforce account password"
+        },
+        {
+            "name":"salesforce.securityToken",
+            "description":"Your security token for accessing the Salesforce API"
+        },
+        {
+            "name":"salesforce.topic",
+            "description":"The topic name created in Salesforce to listen on"
+        }
+    ],
+    "snippets":[
+        {
+            "name":"Subscribe to Topic",
+            "role":"main",
+            "description":"Subscribe to a Salesforce Topic",
+            "snippet-uri":"salesforce-subscribe-topic.xml.snippet"
+        }
+    ]
+}

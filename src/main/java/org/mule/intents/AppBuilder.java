@@ -12,6 +12,7 @@ package org.mule.intents;
 import org.mule.intents.model.AppDefinition;
 import org.mule.intents.model.Bloc;
 import org.mule.intents.model.BlocConfig;
+import org.mule.intents.model.ContentType;
 import org.mule.intents.model.Snippet;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ import org.dom4j.io.XMLWriter;
  */
 public class AppBuilder
 {
-    public static final Namespace docNS = new Namespace("doc", "http://www.mulesoft.org/schema/mule/documentation");
+    //public static final Namespace docNS = new Namespace("doc", "http://www.mulesoft.org/schema/mule/documentation");
     public static final Namespace muleNS = new Namespace("", "http://www.mulesoft.org/schema/mule/core");
     public static final Namespace xsiNS = new Namespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 
@@ -65,9 +66,18 @@ public class AppBuilder
         List<Bloc> blocs = new ArrayList<Bloc>();
 
         //Lookup Bloc elements for this app
+        Bloc currentBloc = null;
         for (BlocConfig blocConfig : app.getBlocs())
         {
-            blocs.add(registry.getBloc(blocConfig.getName()));
+            Bloc bloc = registry.getBloc(blocConfig.getName());
+            if(currentBloc!=null) {
+                if(!bloc.supportsInputTypes(currentBloc.getOutputTypes())) {
+                    throw new IllegalArgumentException("App is not valid, Bloc " + currentBloc.getName() +" (" + currentBloc.getOutputTypes() + ") not compatible with bloc: " + bloc.getName() +" (" + bloc.getInputTypes() + ")");
+                }
+                currentBloc = bloc;
+            }
+
+            blocs.add(bloc);
         }
 
         //Create the Mule config with the mule root element and NS
@@ -91,6 +101,8 @@ public class AppBuilder
         rawConfig = convertConfigToString();
         System.out.println(rawConfig);
         System.out.println(getAllParams().toString());
+        
+        printDataTypes();
     }
 
     public Document getConfig()
@@ -112,6 +124,8 @@ public class AppBuilder
     {
         Document snippet = intent.loadSnippet();
         addNamespaces(snippet);
+        addSchemaLocations(snippet);
+
         for (Object o : snippet.getRootElement().content())
         {
             if (o instanceof Element)
@@ -124,11 +138,13 @@ public class AppBuilder
                 }
             }
         }
+
+        addBlockInterceptor(intent.getParent(), flow);
     }
 
-    public void addAction(Snippet intent) throws IOException, DocumentException
+    public void addAction(Snippet snip) throws IOException, DocumentException
     {
-        Document snippet = intent.loadSnippet();
+        Document snippet = snip.loadSnippet();
         addNamespaces(snippet);
         addSchemaLocations(snippet);
         for (Object o : snippet.getRootElement().content())
@@ -141,10 +157,31 @@ public class AppBuilder
                 {
                     Element element = flow.addElement("flow-ref");
                     element.addAttribute("name", e.attribute("name").getValue());
-                    element.addAttribute(new QName("name", docNS), intent.getParent().getName());
+                    //element.addAttribute(new QName("name", docNS), intent.getParent().getName());
+                    addBlockInterceptor(snip.getParent(), flow);
                 }
             }
         }
+    }
+
+    protected void addBlockInterceptor(Bloc bloc, Element e) {
+        Element comp = e.addElement("component");
+        Element obj = comp.addElement("singleton-object");
+        obj.addAttribute("class", "org.mule.intents.TypeChecker");
+        obj.addElement("property").addAttribute("key", "types").addAttribute("value", typesToString(bloc.getOutputTypes()));
+        obj.addElement("property").addAttribute("key", "previousBloc").addAttribute("value", bloc.getName());
+    }
+
+    private String typesToString(List<String> types)
+    {
+        StringBuilder buf = new StringBuilder();
+        for (String type : types)
+        {
+            buf.append(type).append(",");
+        }
+
+        String t = buf.toString();
+        return t.substring(0,t.length()-1);
     }
 
     public Properties getAllParams() throws IOException
@@ -163,10 +200,7 @@ public class AppBuilder
         List<Namespace> ns = snippet.getRootElement().declaredNamespaces();
         for (Namespace n : ns)
         {
-            if(!n.getURI().equals("http://www.mulesoft.org/schema/mule/snippet") &&
-                !n.getURI().equals("http://www.mulesoft.org/schema/mule/documentation")) {
-                config.getRootElement().add(n.detach());
-            }
+            config.getRootElement().add(n.detach());
         }
     }
 
@@ -188,11 +222,7 @@ public class AppBuilder
         {
             String x = tokenizer.nextToken();
             String y = tokenizer.nextToken();
-            //Skip the snippet namespace
-            if(!x.equals("http://www.mulesoft.org/schema/mule/snippet") ||
-               !x.equals("http://www.mulesoft.org/schema/mule/documentation")){
-                schemaLocations.put(x,y);
-            }
+            schemaLocations.put(x,y);
         }
 
         StringBuilder buf = new StringBuilder();
@@ -220,5 +250,15 @@ public class AppBuilder
         XMLWriter writer = new XMLWriter(string, format);
         writer.write(getConfig());
         return string.toString();
+    }
+    
+    protected void printDataTypes()
+    {
+        StringBuilder b = new StringBuilder();
+        for (ContentType type : registry.getContentTypes().values())
+        {
+            b.append("\n").append(type.toString());
+        }
+        System.out.println(b.toString());
     }
 }

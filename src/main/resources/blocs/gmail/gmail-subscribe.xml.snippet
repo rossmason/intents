@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
            xmlns:imaps="http://www.mulesoft.org/schema/mule/imaps"
-           xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            version="CE-3.3.0" xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/imaps http://www.mulesoft.org/schema/mule/imaps/3.3/mule-imaps.xsd 
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.3/mule.xsd">
 
     <imaps:connector name="IMAP" mailboxFolder="${gmail.label}" validateConnections="true"
-                     deleteReadMessages="${gmail.archive.messages}" doc:name="IMAP"/>
+                     deleteReadMessages="${gmail.archive.messages}"/>
 
     <flow name="main">
-        <imaps:inbound-endpoint host="imap.gmail.com" port="993" user="${gmail.username}" password="${gmail.password}"
-                                responseTimeout="10000" connector-ref="IMAP" doc:name="From Gmail"/>
+        <imaps:inbound-endpoint host="imap.gmail.com" port="993" user="${gmail.username}"
+                                password="${gmail.password}"
+                                responseTimeout="10000" connector-ref="IMAP" />
     </flow>
 
 </mule>

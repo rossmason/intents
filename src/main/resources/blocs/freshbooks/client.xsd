@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="client" type="clientType"/>
+  <xs:complexType name="contactType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="username"/>
+      <xs:element type="xs:string" name="first_name"/>
+      <xs:element type="xs:string" name="last_name"/>
+      <xs:element type="xs:string" name="email">
+        <xs:annotation>
+          <xs:documentation>(Email address is the only required field)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="phone1"/>
+      <xs:element type="xs:string" name="phone2"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="contactsType">
+    <xs:sequence>
+      <xs:element type="contactType" name="contact"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="clientType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="first_name"/>
+      <xs:element type="xs:string" name="last_name"/>
+      <xs:element type="xs:string" name="organization"/>
+      <xs:element type="xs:string" name="email"/>
+      <xs:element type="xs:string" name="username">
+        <xs:annotation>
+          <xs:documentation>Defaults to first name + last name (Optional)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="password">
+        <xs:annotation>
+          <xs:documentation>Defaults to random password (Optional)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="contactsType" name="contacts">
+        <xs:annotation>
+          <xs:documentation>(Optional)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="work_phone">
+        <xs:annotation>
+          <xs:documentation>(Optional)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="home_phone">
+        <xs:annotation>
+          <xs:documentation>(Optional)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="mobile">
+        <xs:annotation>
+          <xs:documentation>(Optional)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="fax">
+        <xs:annotation>
+          <xs:documentation>(Optional)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="language">
+        <xs:annotation>
+          <xs:documentation>See language.list for codes. (Optional)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="currency_code">
+        <xs:annotation>
+          <xs:documentation>(Optional)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="notes">
+        <xs:annotation>
+          <xs:documentation>(Optional)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="p_street1">
+        <xs:annotation>
+          <xs:documentation>Primary address (All optional)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="p_street2"/>
+      <xs:element type="xs:string" name="p_city"/>
+      <xs:element type="xs:string" name="p_state"/>
+      <xs:element type="xs:string" name="p_country"/>
+      <xs:element type="xs:int" name="p_code"/>
+      <xs:element type="xs:string" name="s_street1">
+        <xs:annotation>
+          <xs:documentation>Secondary address (All optional)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="s_street2"/>
+      <xs:element type="xs:string" name="s_city"/>
+      <xs:element type="xs:string" name="s_state"/>
+      <xs:element type="xs:string" name="s_country"/>
+      <xs:element type="xs:string" name="s_code"/>
+      <xs:element type="xs:string" name="vat_name">
+        <xs:annotation>
+          <xs:documentation>e.g. 'VAT Number' (Optional)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="vat_number">
+        <xs:annotation>
+          <xs:documentation>If set, shown with vat_name under client address (Optional)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

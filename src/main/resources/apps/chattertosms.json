@@ -1,25 +1,21 @@
 {
-    "name":"Gmail Photos to Box",
+    "name":"Chatter to SMS",
     "app-version" : "1.0",
     "platform-version" : "CE-3.3.0",
     "blocs":[
         {
-            "name":"Gmail Subscribe",
+            "name":"Salesforce Subscribe",
             "params":{
-                "gmail.username":"ibeanstestinbox%40gmail.com",
-                "gmail.password":"ibeans0101"
+                "salesforce.username":"emiliano.lesende@mule.stream",
+                "salesforce.password":"muleftw1",
+                "salesforce.securityToken" : "oWCwniCGFl3VkrdDB2kaAr37k",
+                "salesforce.topic" : "NewsFeedStream"
             }
         },
         {
-            "name":"Save Attachments",
+            "name":"Filter",
             "params":{
-                "save.attachment.types":"image/*"
-            }
-        },
-        {
-            "name":"Box.Net write Files",
-            "params":{
-                "boxnet.api.key":"9hq3yujx6crrkazks12e25316hgxj1bq"
+                "filter.expression":"regex(now)"
             }
         },
         {
@@ -29,7 +25,7 @@
                 "twilio.authToken":"31b52503b3a1623cd91d54e04f656dac",
                 "twilio.accountSid":"AC9c46e1957e67224fa41c41c141b2c8b5",
                 "twilio.toPhoneNumber":"+14152901974",
-                "twilio.message":"You have new photos in your Box!"
+                "twilio.message":"#[payload]"
 
             }
 

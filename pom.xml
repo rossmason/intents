@@ -35,10 +35,55 @@
         </dependency>
 
         <dependency>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-email</artifactId>
+            <version>${mule.version}</version>
+            <!--<scope>provided</scope>-->
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-http</artifactId>
+            <version>${mule.version}</version>
+            <!--<scope>provided</scope>-->
+        </dependency>
+
+        <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-boxnet</artifactId>
-            <version>RELEASE</version>
+            <version>1.1.0-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-objectstore</artifactId>
+            <version>1.2.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-twilio</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-sfdc</artifactId>
+            <version>LATEST</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-freshbooks</artifactId>
+            <version>LATEST</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-scripting</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+
         <!--<dependency>-->
             <!--<groupId>org.springframework</groupId>-->
             <!--<artifactId>spring-beans</artifactId>-->
@@ -56,12 +101,6 @@
         <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-functional</artifactId>
-            <version>${mule.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.modules</groupId>
-            <artifactId>mule-module-scripting</artifactId>
             <version>${mule.version}</version>
             <scope>test</scope>
         </dependency>
@@ -144,6 +183,12 @@
             <id>mulesoft-releases</id>
             <name>MuleSoft Releases Repository</name>
             <url>http://repository.mulesoft.org/releases/</url>
+            <layout>default</layout>
+        </repository>
+        <repository>
+            <id>muleforge-snapshot-releases</id>
+            <name>MuleForge Snapshot Repository</name>
+            <url>http://repository.mulesoft.org/snapshots/</url>
             <layout>default</layout>
         </repository>
     </repositories>

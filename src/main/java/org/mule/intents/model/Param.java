@@ -18,6 +18,7 @@ public class Param
 {
     private String name;
     private String description;
+    private String type;
     private boolean optional = false;
     @JsonProperty("default")
     private String defaultValue;
@@ -72,5 +73,15 @@ public class Param
     public void setDefaultValue(String defaultValue)
     {
         this.defaultValue = defaultValue;
+    }
+
+    public String getType()
+    {
+        return type;
+    }
+
+    public void setType(String type)
+    {
+        this.type = type;
     }
 }

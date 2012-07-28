@@ -1,18 +1,16 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
            xmlns:boxnet="http://www.mulesoft.org/schema/mule/boxnet"
            xmlns:http="http://www.mulesoft.org/schema/mule/http"
-           xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            version="CE-3.3.0" xsi:schemaLocation="
-http://www.mulesoft.org/schema/mule/boxnet http://www.mulesoft.org/schema/mule/boxnet/1.0/mule-boxnet.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/3.3/mule-http.xsd
-http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.3/mule.xsd ">
+http://www.mulesoft.org/schema/mule/boxnet http://www.mulesoft.org/schema/mule/boxnet/current/mule-boxnet.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd ">
 
-    <flow name="Boxnet-init-getAuthToken-callback" doc:name="Boxnet-init-getAuthToken-callback">
-        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="authtoken"
-                               doc:name="HTTP"/>
-        <boxnet:auth-token config-ref="Boxnet" doc:name="Get Auth Token"/>
-        <set-payload value="Authenitcation complete: #[message.payload]" doc:name="Success Message"/>
-        <http:response-builder status="200" contentType="text/plain" doc:name="HTTP Response Builder"/>
+    <flow name="Boxnet-init-getAuthToken-callback">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="authtoken"/>
+        <boxnet:auth-token config-ref="Boxnet"/>
+        <set-payload value="Authenitcation complete: #[message.payload]"/>
+        <http:response-builder status="200" contentType="text/plain" />
     </flow>
 </mule>

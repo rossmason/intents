@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+           xmlns:freshbooks="http://www.mulesoft.org/schema/mule/freshbooks"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           version="CE-3.3.0" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/freshbooks http://www.mulesoft.org/schema/mule/freshbooks/current/mule-freshbooks.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.3/mule.xsd">
+
+
+    <freshbooks:config apiUrl="${freshbooks.apiURL}" authenticationToken="${freshbooks.authToken}"/>
+    <sub-flow name="create client">
+        <freshbooks:create-client firstName="#[map-payload:FirstName]" lastName="#[map-payload:LastName]" organization="#[variable:accountName]"
+                                  email="#[map-payload:Email]" workPhone="#[variable:accountPhone]" homePhone="#[map-payload:HomePhone?]"
+                                  mobile="#[map-payload:MobilePhone?]" fax="#[variable:accountFax]"
+                                  primaryStreet1="#[variable:accountBillingStreet]" primaryCity="#[variable:accountBillingCity]"
+                                  primaryState="#[variable:accountBillingState]" primaryCountry="#[variable:accountBillingCountry]"
+                                  primaryZipCode="#[variable:accountBillingPostalCode]"/>    </sub-flow>
+
+</mule>

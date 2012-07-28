@@ -1,8 +1,9 @@
 {
-    "name":"Gmail Subscribe",
-    "description":"Read email from a gmail account",
+    "name":"Gmail Send",
+    "description":"Send an email from your gmail account",
     "intent":"subscribe",
-    "output-types":["multipart/mixed","text/html","text/plain"],
+    "input-types":["multipart/mixed,text/html,text/plain"],
+    "output-types":["multipart/mixed,text/html,text/plain"],
     "params":[
         {
             "name":"gmail.username",
@@ -13,7 +14,7 @@
             "description":"your gmail account password"
         },
         {
-            "name":"gmail.label",
+            "name":"gmail.toAddress",
             "description":"Listen to emails with a specific label",
             "optional":"true",
             "default":"INBOX"
@@ -28,19 +29,19 @@
     "contents":[
         {
             "name" : "From Address",
-            "expression" : "#[message.inboundProperties['fromAddress']]"
+            "expression" : "#[message.outboundProperties['fromAddress']]"
         },
         {
             "name" : "ReplyTo Address",
-            "expression" : "#[message.inboundProperties['replyToAddress']]"
+            "expression" : "#[message.outboundProperties['replyToAddress']]"
         },
         {
             "name" : "Email Subject",
-            "expression": "#[message.inboundProperties['subject']]"
+            "expression": "#[message.outboundProperties['subject']]"
         },
         {
             "name": "Received Date",
-            "expression" : "#[message.inboundProperties['sentDate']]"
+            "expression" : "#[message.outboundProperties['sentDate']]"
         },
         {
             "name" : "Email Body",
@@ -49,10 +50,10 @@
     ],
     "snippets":[
         {
-            "name":"Listen on Gmail",
+            "name":"Send via Gmail",
             "role":"main",
-            "description":"Creates a message source from a Gmail Inbox",
-            "snippet-uri":"gmail-subscribe.xml.snippet"
+            "description":"Sends an email via your Gmail Inbox",
+            "snippet-uri":"gmail-send.xml.snippet"
         }
     ]
 }

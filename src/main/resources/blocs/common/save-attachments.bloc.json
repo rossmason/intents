@@ -2,6 +2,8 @@
     "name":"Save Attachments",
     "description":"Save Attachments to a local cache and create a list of file URLs",
     "intent" : "save",
+    "input-types":["multipart/*"],
+    "output-types":["text/uri-list"],
     "params":[
         {
             "name":"save.attachment.types",
@@ -11,9 +13,8 @@
     "snippets":[
         {
             "name":"Save attachments",
+            "role":"main",
             "description":"Saves Attachments to a local cache and then creates a list of file URLs to the local copies. These can be used to upload files to a new location",
-            "input-types":["*/*"],
-            "output-type":"text/uri-list",
             "snippet-uri":"save-attachments.xml.snippet"
         }
     ]

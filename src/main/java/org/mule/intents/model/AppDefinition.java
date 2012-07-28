@@ -103,11 +103,6 @@ public class AppDefinition
             {
                 throw new IllegalArgumentException("Bloc not registered: " + blocConfig.getName());
             }
-
-            if (bloc.getIntent()==null)
-            {
-                throw new IllegalArgumentException("Badly formed Bloc, intent is null: " + blocConfig.getName());
-            }
             
             if(first) {
                 first=false;
@@ -122,6 +117,7 @@ public class AppDefinition
                 
             blocDefs.add(bloc);
 
+            //Validate params and set defaults
             for (Param param : bloc.getParams())
             {
                 //Validate no optional params are missing
