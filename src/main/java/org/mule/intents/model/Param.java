@@ -9,6 +9,8 @@
  */
 package org.mule.intents.model;
 
+import org.mule.intents.model.fields.FieldType;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
@@ -19,6 +21,7 @@ public class Param
     private String name;
     private String description;
     private String type;
+    private FieldType fieldType;
     private boolean optional = false;
     @JsonProperty("default")
     private String defaultValue;
@@ -75,13 +78,34 @@ public class Param
         this.defaultValue = defaultValue;
     }
 
+    public void setType(String type)
+    {
+        this.type = type;
+        fieldType = FieldType.get(type);
+    }
+
+    public boolean isValid(String value) {
+        return fieldType.isValid(value);
+    }
+
     public String getType()
     {
         return type;
     }
 
-    public void setType(String type)
+    public Object validate(String value, StringBuilder errors)
     {
-        this.type = type;
+        if (value == null)
+        {
+            if (isOptional())
+            {
+                return getDefaultValue();
+            }
+            else
+            {
+                errors.append("Value is null but is not optional: ").append(getName()).append("\n");
+            }
+        }
+        return value;
     }
 }

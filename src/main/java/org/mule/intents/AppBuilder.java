@@ -13,7 +13,7 @@ import org.mule.intents.model.AppDefinition;
 import org.mule.intents.model.Bloc;
 import org.mule.intents.model.BlocConfig;
 import org.mule.intents.model.ContentType;
-import org.mule.intents.model.Snippet;
+import org.mule.intents.model.Module;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,7 +52,7 @@ public class AppBuilder
     private BlocRegistry registry;
     private AppDefinition app;
     private Element flow;
-    private Map<String,String> schemaLocations = new HashMap<String,String>();
+    private Map<String, String> schemaLocations = new HashMap<String, String>();
 
     public AppBuilder(InputStream appDef, BlocRegistry registry) throws IOException, DocumentException
     {
@@ -70,9 +70,11 @@ public class AppBuilder
         for (BlocConfig blocConfig : app.getBlocs())
         {
             Bloc bloc = registry.getBloc(blocConfig.getName());
-            if(currentBloc!=null) {
-                if(!bloc.supportsInputTypes(currentBloc.getOutputTypes())) {
-                    throw new IllegalArgumentException("App is not valid, Bloc " + currentBloc.getName() +" (" + currentBloc.getOutputTypes() + ") not compatible with bloc: " + bloc.getName() +" (" + bloc.getInputTypes() + ")");
+            if (currentBloc != null)
+            {
+                if (!bloc.supportsInputTypes(currentBloc.getOutputTypes()))
+                {
+                    throw new IllegalArgumentException("App is not valid, Bloc " + currentBloc.getName() + " (" + currentBloc.getOutputTypes() + ") not compatible with bloc: " + bloc.getName() + " (" + bloc.getInputTypes() + ")");
                 }
                 currentBloc = bloc;
             }
@@ -83,25 +85,30 @@ public class AppBuilder
         //Create the Mule config with the mule root element and NS
         config = createMuleConfig();
 
+        //Process any top-level module configs first
+        //We do this loop first since these config elements should appear at the
+        //top of the config
         for (Bloc bloc : blocs)
         {
-            for (Snippet snippet : bloc.getSnippets())
+            addModuleConfig(bloc.getModule());
+        }
+
+        for (Bloc bloc : blocs)
+        {
+            if (bloc.getIntent().equals("subscribe"))
             {
-                if (bloc.getIntent().equals("subscribe") )
-                {
-                    addTrigger(snippet);
-                }
-                else
-                {
-                    addAction(snippet);
-                }
+                addTrigger(bloc);
+            }
+            else
+            {
+                addAction(bloc);
             }
         }
 
         rawConfig = convertConfigToString();
         System.out.println(rawConfig);
         System.out.println(getAllParams().toString());
-        
+
         printDataTypes();
     }
 
@@ -120,9 +127,28 @@ public class AppBuilder
         return app;
     }
 
-    public void addTrigger(Snippet intent) throws IOException, DocumentException
+    public void addModuleConfig(Module module) throws IOException, DocumentException
     {
-        Document snippet = intent.loadSnippet();
+        //This top level module config is optional
+        Document snippet = module.loadConfig();
+        if(snippet==null) return;
+
+        addNamespaces(snippet);
+        addSchemaLocations(snippet);
+        for (Object o : snippet.getRootElement().content())
+        {
+            if (o instanceof Element)
+            {
+                Element e = (Element) ((Element) o).detach();
+                config.getRootElement().add(e);
+            }
+        }
+
+    }
+
+    public void addTrigger(Bloc bloc) throws IOException, DocumentException
+    {
+        Document snippet = bloc.loadSnippet();
         addNamespaces(snippet);
         addSchemaLocations(snippet);
 
@@ -132,19 +158,19 @@ public class AppBuilder
             {
                 Element e = (Element) ((Element) o).detach();
                 config.getRootElement().add(e);
-                if (e.attribute("name").getValue().equals("main"))
+                if (e.getName().equals("flow") && e.attribute("name").getValue().equals("main"))
                 {
                     flow = e;
                 }
             }
         }
 
-        addBlockInterceptor(intent.getParent(), flow);
+        addBlockInterceptor(bloc, flow);
     }
 
-    public void addAction(Snippet snip) throws IOException, DocumentException
+    public void addAction(Bloc bloc) throws IOException, DocumentException
     {
-        Document snippet = snip.loadSnippet();
+        Document snippet = bloc.loadSnippet();
         addNamespaces(snippet);
         addSchemaLocations(snippet);
         for (Object o : snippet.getRootElement().content())
@@ -157,14 +183,14 @@ public class AppBuilder
                 {
                     Element element = flow.addElement("flow-ref");
                     element.addAttribute("name", e.attribute("name").getValue());
-                    //element.addAttribute(new QName("name", docNS), intent.getParent().getName());
-                    addBlockInterceptor(snip.getParent(), flow);
+                    addBlockInterceptor(bloc, flow);
                 }
             }
         }
     }
 
-    protected void addBlockInterceptor(Bloc bloc, Element e) {
+    protected void addBlockInterceptor(Bloc bloc, Element e)
+    {
         Element comp = e.addElement("component");
         Element obj = comp.addElement("singleton-object");
         obj.addAttribute("class", "org.mule.intents.TypeChecker");
@@ -181,7 +207,7 @@ public class AppBuilder
         }
 
         String t = buf.toString();
-        return t.substring(0,t.length()-1);
+        return t.substring(0, t.length() - 1);
     }
 
     public Properties getAllParams() throws IOException
@@ -205,24 +231,27 @@ public class AppBuilder
     }
 
 
-    
     protected void addSchemaLocations(Document snippet)
     {
         Attribute att = snippet.getRootElement().attribute(xsiQN);
-        if(att==null) return;
-        
+        if (att == null)
+        {
+            return;
+        }
+
         Attribute existing = config.getRootElement().attribute(xsiQN);
-        if(existing==null) {
+        if (existing == null)
+        {
             config.getRootElement().addAttribute(xsiQN, "");
             existing = config.getRootElement().attribute(xsiQN);
         }
-        
+
         //save schemaLocations
         for (StringTokenizer tokenizer = new StringTokenizer(att.getValue(), " "); tokenizer.hasMoreTokens(); )
         {
             String x = tokenizer.nextToken();
             String y = tokenizer.nextToken();
-            schemaLocations.put(x,y);
+            schemaLocations.put(x, y);
         }
 
         StringBuilder buf = new StringBuilder();
@@ -230,13 +259,14 @@ public class AppBuilder
         {
             buf.append(s).append(" ").append(schemaLocations.get(s)).append("\n");
         }
-                
+
         existing.setValue(buf.toString());
 
         System.out.println("xsi:schemaLocation = " + existing.getValue());
     }
 
-    protected Document createMuleConfig() {
+    protected Document createMuleConfig()
+    {
         DocumentFactory factory = DocumentFactory.getInstance();
         Element root = factory.createElement(new QName("mule", muleNS));
         root.addAttribute("version", app.getPlatformVersion());
@@ -251,7 +281,7 @@ public class AppBuilder
         writer.write(getConfig());
         return string.toString();
     }
-    
+
     protected void printDataTypes()
     {
         StringBuilder b = new StringBuilder();

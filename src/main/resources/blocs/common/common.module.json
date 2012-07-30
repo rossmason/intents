@@ -1,0 +1,36 @@
+{
+    "name":"Common",
+    "namespace":"common",
+    "blocs":[
+        {
+            "name":"Filter",
+            "description":"Filter the current message and discard if not a match",
+            "intent" : "filter",
+            "input-types":["*/*"],
+            "output-types":["*/*"],
+            "snippet-uri":"filter.xml.snippet",
+            "params":[
+                {
+                    "name":"common.filter.expression",
+                    "type":"text",
+                    "description":"The filter expression to execute against the message"
+                }
+            ]
+        },
+        {
+            "name":"Save Attachments",
+            "description":"Save Attachments to a local cache and create a list of file URLs",
+            "intent" : "save",
+            "input-types":["multipart/*"],
+            "output-types":["text/uri-list"],
+            "snippet-uri":"save-attachments.xml.snippet",
+            "params":[
+                {
+                    "name":"common.save.attachment.types",
+                    "type":"text",
+                    "description":"a list of one or more content types, this value can use wildcards such as 'image/*'"
+                }
+            ]
+        }
+    ]
+}

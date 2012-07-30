@@ -19,7 +19,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 public class ContentType
 {
     @JsonProperty("type")
-    private String contentType;
+    private String type;
     private String description;
     private URI schema;
     @JsonProperty("schema-type")
@@ -30,28 +30,28 @@ public class ContentType
     }
 
 
-    public ContentType(String contentType, String description)
+    public ContentType(String type, String description)
     {
-        this.contentType = contentType;
+        setType(type);
         this.description = description;
     }
 
-    public ContentType(String contentType, String description, URI schema, String schemaType)
+    public ContentType(String type, String description, URI schema, String schemaType)
     {
-        this.contentType = contentType;
+        setType(type);
         this.description = description;
         this.schema = schema;
         this.schemaType = schemaType;
     }
 
-    public String getContentType()
+    public String getType()
     {
-        return contentType;
+        return type;
     }
 
-    public void setContentType(String contentType)
+    public void setType(String type)
     {
-        this.contentType = contentType;
+        this.type = type;
     }
 
     public String getDescription()
@@ -87,8 +87,8 @@ public class ContentType
     @Override
     public String toString()
     {
-        return "DataType{" +
-                "contentType='" + contentType + '\'' +
+        return "ContntType{" +
+                "contentType='" + type + '\'' +
                 ", description='" + description + '\'' +
                 ", schema=" + schema +
                 ", schemaType='" + schemaType + '\'' +

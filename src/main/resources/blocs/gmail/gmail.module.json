@@ -1,0 +1,83 @@
+{
+    "name":"Gmail Module",
+    "namespace":"gmail",
+    "shared-params":[
+        {
+            "name":"gmail.username",
+            "type":"email",
+            "description":"your gmail email address"
+        },
+        {
+            "name":"gmail.password",
+            "type":"password",
+            "description":"your gmail account password"
+        }
+    ],
+    "blocs":[
+        {
+            "name":"Gmail Read Email",
+            "description":"Read email from a gmail account",
+            "intent":"subscribe",
+            "output-types":["multipart/mixed", "text/html", "text/plain"],
+            "snippet-uri":"gmail-subscribe.xml.snippet",
+            "params":[
+                {
+                    "name":"gmail.label",
+                    "description":"Listen to emails with a specific label",
+                    "optional":"true",
+                    "type":"text",
+                    "default":"INBOX"
+                },
+                {
+                    "name":"gmail.archive.messages",
+                    "description":"Should read messages be automatically archived",
+                    "optional":"true",
+                    "type":"boolean",
+                    "default":"false"
+                }
+            ],
+            "contents":[
+                {
+                    "name":"From Address",
+                    "expression":"#[message.inboundProperties['fromAddress']]"
+                },
+                {
+                    "name":"ReplyTo Address",
+                    "expression":"#[message.inboundProperties['replyToAddress']]"
+                },
+                {
+                    "name":"Email Subject",
+                    "expression":"#[message.inboundProperties['subject']]"
+                },
+                {
+                    "name":"Received Date",
+                    "expression":"#[message.inboundProperties['sentDate']]"
+                },
+                {
+                    "name":"Email Body",
+                    "expression":"#[message.payload]"
+                }
+            ]
+        },
+        {
+            "name":"Gmail Send Email",
+            "description":"Send an email from your gmail account",
+            "intent":"subscribe",
+            "input-types":["multipart/mixed,text/html,text/plain"],
+            "output-types":["multipart/mixed,text/html,text/plain"],
+            "snippet-uri":"gmail-send.xml.snippet",
+            "params":[
+                {
+                    "name":"gmail.toAddress",
+                    "type":"email",
+                    "description":"Who will the email go to"
+                },
+                {
+                    "name":"gmail.subject",
+                    "type":"text",
+                    "description":"The message subject"
+                }
+            ]
+        }
+    ]
+}

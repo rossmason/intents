@@ -1,0 +1,10 @@
+<person>
+    <first-name></first-name>
+    <last-name></last-name>
+    <salutation></salutation>
+    <home-phone></home-phone>
+    <work-phone></work-phone>
+    <mobile-phone></mobile-phone>
+    <primary-address>
+        <street
+    </primary-address>

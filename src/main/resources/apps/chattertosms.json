@@ -15,7 +15,7 @@
         {
             "name":"Filter",
             "params":{
-                "filter.expression":"regex(now)"
+                "common.filter.expression":"regex(now)"
             }
         },
         {

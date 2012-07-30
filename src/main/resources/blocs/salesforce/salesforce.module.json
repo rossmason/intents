@@ -1,0 +1,57 @@
+{
+    "name":"Salesforce",
+    "namespace":"sfdc",
+    "shared-params":[
+        {
+            "name":"salesforce.username",
+            "type":"text",
+            "description":"Your salesforce username, often it is your email address"
+        } ,
+        {
+            "name":"salesforce.password",
+            "type":"password",
+            "description":"your Salesforce account password"
+        },
+        {
+            "name":"salesforce.securityToken",
+            "type":"password",
+            "description":"Your security token for accessing the Salesforce API"
+        }
+    ],
+    "blocs":[
+        {
+            "name":"Salesforce Subscribe",
+            "description":"Subscribe to a Salesforce topic throw the streaming API",
+            "intent":"subscribe",
+            "output-types":["application/mule.message+map"],
+            "snippet-uri":"salesforce-subscribe-topic.xml.snippet",
+            "params":[
+                {
+                    "name":"salesforce.topic",
+                    "type":"text",
+                    "description":"The topic name created in Salesforce to listen on"
+                }
+            ]
+        },
+        {
+            "name":"Salesforce Create Topic",
+            "description":"Create a real-time Salesforce topic",
+            "intent":"create",
+            "input-types":["*/*"],
+            "output-types":["*/*"],
+            "snippet-uri":"salesforce-create-topic.xml.snippet",
+            "params":[
+                {
+                    "name":"salesforce.topic",
+                    "type":"text",
+                    "description":"The topic name to create in Salesforce"
+                },
+                {
+                    "name":"salesforce.query",
+                    "type":"text",
+                    "description":"The select query that defines what data will be received on a topic"
+                }
+            ]
+        }
+    ]
+}

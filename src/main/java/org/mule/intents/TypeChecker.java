@@ -58,6 +58,7 @@ public class TypeChecker implements Callable, Initialisable
     public void initialise() throws InitialisationException
     {
         filter = new WildcardFilter(getTypes());
+        filter.setCaseSensitive(false);
     }
 
     public Object onCall(MuleEventContext eventContext) throws Exception

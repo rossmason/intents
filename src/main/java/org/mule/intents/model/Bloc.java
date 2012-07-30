@@ -10,27 +10,29 @@
 package org.mule.intents.model;
 
 import org.mule.routing.filters.WildcardFilter;
+import org.mule.util.IOUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
 
 /**
  * TODO
  */
-public class Bloc
+public class Bloc implements Validatable
 {
     private String name;
     private String description;
     private String intent;
     private List<Param> params = new ArrayList<Param>();
-    private List<Snippet> snippets = new ArrayList<Snippet>();
     private List<Content> contents = new ArrayList<Content>();
-
-    @JsonProperty("data-types")
-    private List<ContentType> dataTypes = new ArrayList<ContentType>();
 
     @JsonProperty("input-types")
     private List<String> inputTypes = new ArrayList<String>();
@@ -40,9 +42,13 @@ public class Bloc
 
     private File definitionFile;
 
-    public void validate()
+    private Module module;
+
+    @JsonProperty("snippet-uri")
+    private String snippetUri;
+
+    public void validate(StringBuilder errors)
     {
-        StringBuilder errors = new StringBuilder();
         if (name == null)
         {
             errors.append("A Bloc must have a name. Definition is: ").append(getDefinitionFile()).append("\n");
@@ -53,10 +59,6 @@ public class Bloc
             errors.append("A Bloc must have an intent. Definition is: ").append(getDefinitionFile()).append("\n");
         }
 
-        if (snippets.size() == 0)
-        {
-            errors.append("A Bloc must have a snippet. Definition is: ").append(getDefinitionFile()).append("\n");
-        }
 
         if (inputTypes.size() == 0 && !intent.equals("subscribe"))
         {
@@ -68,29 +70,11 @@ public class Bloc
             errors.append("A Bloc must have at least one output data type. Definition is: ").append(getDefinitionFile()).append("\n");
         }
 
-        boolean hasMain = false;
-        for (Snippet snippet : snippets)
+        for (Param param : params)
         {
-            if (snippet.getRole()!=null && snippet.getRole().equalsIgnoreCase("main"))
-            {
-                if (!hasMain)
-                {
-                    hasMain = true;
-                }
-                else
-                {
-                    errors.append("There can only be one snippet with the 'main' role. Definition is: ").append(getDefinitionFile()).append("\n");
-                }
+            if(param.getType()==null) {
+                errors.append("A Param must have a type defined. Param is: ").append(param.getName()).append(" Definition is: ").append(getDefinitionFile()).append("\n");
             }
-        }
-
-        if (!hasMain)
-        {
-            errors.append("A Bloc must have one snippet with the 'main' role. Definition is: ").append(getDefinitionFile()).append("\n");
-        }
-
-        if(errors.length()>0) {
-            throw new IllegalArgumentException("There were issues with the following bloc definitions: \n" + errors.toString());
         }
     }
 
@@ -134,20 +118,6 @@ public class Bloc
         this.params = params;
     }
 
-    public List<Snippet> getSnippets()
-    {
-        return snippets;
-    }
-
-    public void setSnippets(List<Snippet> snippets)
-    {
-        this.snippets = snippets;
-        for (Snippet snippet : snippets)
-        {
-            snippet.setParent(this);
-        }
-    }
-
     public File getDefinitionFile()
     {
         return definitionFile;
@@ -168,16 +138,6 @@ public class Bloc
         this.contents = contents;
     }
 
-    public List<ContentType> getDataTypes()
-    {
-        return dataTypes;
-    }
-
-    public void setDataTypes(List<ContentType> dataTypes)
-    {
-        this.dataTypes = dataTypes;
-    }
-
     public List<String> getInputTypes()
     {
         return inputTypes;
@@ -191,6 +151,16 @@ public class Bloc
     public List<String> getOutputTypes()
     {
         return outputTypes;
+    }
+
+    public Module getModule()
+    {
+        return module;
+    }
+
+    public void setModule(Module module)
+    {
+        this.module = module;
     }
 
     public void setOutputTypes(List<String> outputTypes)
@@ -246,5 +216,21 @@ public class Bloc
             }
         }
         return false;
+    }
+
+    public String getSnippetUri()
+    {
+        return snippetUri;
+    }
+
+    public void setSnippetUri(String snippetUri)
+    {
+        this.snippetUri = snippetUri;
+    }
+
+    public Document loadSnippet() throws IOException, DocumentException
+    {
+        File f = new File(module.getDefinitionFile().getParentFile(), getSnippetUri());
+        return DocumentHelper.parseText(IOUtils.toString(new FileInputStream(f)));
     }
 }

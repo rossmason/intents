@@ -12,9 +12,11 @@ package org.mule.intents;
 import org.mule.api.MuleMessage;
 import org.mule.intents.model.Bloc;
 import org.mule.intents.model.ContentType;
+import org.mule.intents.model.Module;
 import org.mule.util.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -31,8 +33,10 @@ import org.codehaus.jackson.map.ObjectMapper;
 public class BlocRegistry
 {
     private Map<String, Bloc> blocs = new HashMap<String, Bloc>();
+    private Map<String, Module> modules = new HashMap<String, Module>();
     private Map<String, ContentType> contentTypes = new HashMap<String, ContentType>();
     private File rootDirectory;
+    private StringBuilder errors = new StringBuilder();
 
     public BlocRegistry(File root) throws Exception
     {
@@ -40,19 +44,31 @@ public class BlocRegistry
         addCommonDataTypes();
         ObjectMapper mapper = new ObjectMapper();
         //File root = new File("src/main/resources/blocs");
-        Collection<File> files = (Collection<File>)FileUtils.listFiles(root, new String[]{"json"}, true);
+        Collection<File> files = (Collection<File>)FileUtils.listFiles(root, new String[]{"module.json"}, true);
         for (File file : files)
         {
-            Bloc bloc = mapper.readValue(file, Bloc.class);
-            bloc.setDefinitionFile(file);
-            addBloc(bloc);
-            addDataTypes(bloc);
+            Module module = null;
+            try
+            {
+                module = mapper.readValue(file, Module.class);
+                module.setDefinitionFile(file);
+                addModule(module);
+                addContentTypes(module);
+            }
+            catch (IOException e)
+            {
+                errors.append("failed to parse Module: ").append(file).append(". Error is: ").append(e.getMessage()).append("\n");
+            }
+        }
+        if(errors.length() > 0)
+        {
+            throw new IllegalArgumentException("There were errors parsing the bloc registry: \n" + errors.toString());
         }
     }
 
     public void addBloc(Bloc bloc)
     {
-        bloc.validate();
+        bloc.validate(errors);
         if(blocs.get(bloc.getName())!=null)
         {
             throw new IllegalArgumentException("Bloc with name already exists: " + bloc.getName());
@@ -60,23 +76,45 @@ public class BlocRegistry
 
         blocs.put(bloc.getName(), bloc);
     }
-    
-    protected void addDataTypes(Bloc bloc)
+
+    public void addModule(Module module)
     {
-        for (ContentType dataType : bloc.getDataTypes())
+        module.validate(errors);
+        if(modules.get(module.getName())!=null)
         {
-            addDataType(dataType);
+            throw new IllegalArgumentException("Module with name already exists: " + module.getName());
+        }
+
+        modules.put(module.getName(), module);
+
+        for (Bloc bloc : module.getBlocs())
+        {
+            bloc.setModule(module);
+            addBloc(bloc);
+        }
+    }
+    
+    protected void addContentTypes(Module module)
+    {
+        for (ContentType dataType : module.getContentTypes())
+        {
+            addContentType(dataType);
         }
     }
 
-    public void addDataType(ContentType dataType)
+    public void addContentType(ContentType contentType)
     {
-        contentTypes.put(dataType.getContentType(), dataType);
+        contentTypes.put(contentType.getType(), contentType);
     }
 
     public Bloc getBloc(String name)
     {
         return blocs.get(name);
+    }
+
+    public Module getModule(String name)
+    {
+        return modules.get(name);
     }
 
     public List<Bloc> getBlocsThatSupportTypes(List<String> types)
@@ -107,7 +145,7 @@ public class BlocRegistry
     
     protected void addCommonDataTypes() throws URISyntaxException
     {
-        addDataType(new ContentType("application/mule.message",
+        addContentType(new ContentType("application/mule.message",
                 "Based content type for org.mule.api.MuleMessage, typically a content hit will be added to the end i.e. 'application/mule-message+email'",
                 new URI(MuleMessage.class.getName()), "class"));
     }

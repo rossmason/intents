@@ -4,7 +4,7 @@
     "platform-version" : "CE-3.3.0",
     "blocs":[
         {
-            "name":"Gmail Subscribe",
+            "name":"Gmail Read Email",
             "params":{
                 "gmail.username":"ibeanstestinbox%40gmail.com",
                 "gmail.password":"ibeans0101"
@@ -13,7 +13,7 @@
         {
             "name":"Save Attachments",
             "params":{
-                "save.attachment.types":"image/*"
+                "common.save.attachment.types":"image/*"
             }
         },
         {

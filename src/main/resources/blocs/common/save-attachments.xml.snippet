@@ -14,7 +14,7 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
         </expression-transformer>
         <scripting:component>
             <scripting:script engine="Groovy">
-                <property key="attachmentFilter" value="${save.attachment.types}"/>
+                <property key="attachmentFilter" value="${common.save.attachment.types}"/>
                 <scripting:text><![CDATA[def files = [];
 log.info("extracting attachments...")
 if(attachmentFilter==null) {

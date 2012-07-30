@@ -129,6 +129,11 @@ public class AppDefinition
                     //Add any missing params that have default values
                     blocConfig.getParams().setProperty(param.getName(), param.getDefaultValue());
                 }
+
+                String value = blocConfig.getParams().getProperty(param.getName());
+                if(!param.isValid(value)) {
+                    throw new IllegalArgumentException(param.getName() + " value is invalid: " + value + " for type: " + param.getType());
+                }
             }
         }
     }

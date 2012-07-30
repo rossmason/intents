@@ -48,4 +48,11 @@ if( !java.awt.Desktop.isDesktopSupported() ) {
             </scripting:script>
         </scripting:component>
     </flow>
+
+    <flow name="Boxnet-init-getAuthToken-callback">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="authtoken"/>
+        <boxnet:auth-token config-ref="Boxnet"/>
+        <set-payload value="Authenitcation complete: #[message.payload]"/>
+        <http:response-builder status="200" contentType="text/plain" />
+    </flow>
 </mule>
