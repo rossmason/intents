@@ -1,0 +1,120 @@
+{
+    "name":"Twitter",
+    "namespace":"twitter",
+    "shared-config-snippet-uri":"twitter-shared-config.xml.snippet",
+    "shared-params":[
+        {
+            "name":"twitter.accessToken",
+            "description":"Your access token",
+            "type":"password"
+        } ,
+        {
+            "name":"twitter.accessSecret",
+            "description":"The generated passcode from your Twitter access token",
+            "type":"password"
+        }
+    ],
+    "shared-contents":[
+        {
+            "name":"Tweet Text",
+            "expression":"json:/payload/text"
+        },
+        {
+            "name":"Username",
+            "expression":"json:/payload/displayName"
+        },
+        {
+            "name":"Created Date",
+            "expression":"json:/payload/displayName"
+        },
+        {
+            "name":"Link to Tweet",
+            "expression":"json:/payload/displayName"
+        },
+        {
+            "name":"First URL",
+            "expression":"json:/payload/displayName"
+        }
+
+    ],
+    "templates":[
+        {
+            "name":"Subscribe to user stream",
+            "description":"Receive and react to events about you and your account",
+            "intent":"subscribe",
+            "input-types":["*/*"],
+            "output-types":["application/vnd.mule.twitter.userevent"],
+            "snippet-uri":"twitter-user-stream-subscribe.xml.snippet",
+            "params":[
+                {
+                    "name":"twitter.eventType",
+                    "description":"Filter on event type.",
+                    "type":"options(New Status,New Mention,Favourite,New Follower)"
+                }
+            ],
+            "triggers":[
+                {
+                    "name":"Tweets by you",
+                    "description":"capture any new status updates by you",
+                    "params":[
+                        {
+                            "name":"twitter.eventType",
+                            "value":"New status"
+                        }
+                    ]
+                },
+                {
+                    "name":"Mentions of you",
+                    "description":"capture any new status updates where you are mentioned",
+                    "params":[
+                        {
+                            "name":"twitter.eventType",
+                            "value":"New Mention"
+                        }
+                    ]
+                },
+                {
+                    "name":"New Followers",
+                    "description":"Will trigger an event every time you get a new follower",
+                    "params":[
+                        {
+                            "name":"twitter.eventType",
+                            "value":"New Follower"
+                        }
+                    ]
+                },
+                {
+                    "name":"New Favourite",
+                    "description":"Will trigger an event every time you favourite a tweet",
+                    "params":[
+                        {
+                            "name":"twitter.eventType",
+                            "value":"Favourite"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"Publish to Twitter",
+            "description":"Publish a new status update to your account",
+            "intent":"publish",
+            "input-types":["text/*"],
+            "output-types":["text/*"],
+            "snippet-uri":"twitter-publish.xml.snippet",
+            "actions":[
+                {
+                    "name":"New Status Update",
+                    "description":"Post a new status update to your followers"
+                }
+            ]
+
+        }
+    ],
+    "content-types":[
+        {
+            "type":"application/vnd.mule.twitter.userEvent",
+            "description":"A twitter user event, that contains all information about the user, profile and event itself"
+        }
+    ]
+}

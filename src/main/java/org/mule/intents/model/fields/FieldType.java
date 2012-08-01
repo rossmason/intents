@@ -27,6 +27,8 @@ public abstract class FieldType
         types.add("password");
         types.add("options");
         types.add("phonenumber");
+        types.add("reference");
+        types.add("url");
         types.add("email");
     }
     public FieldType(String type)
@@ -63,6 +65,15 @@ public abstract class FieldType
         }else if(temp.equals("phoneNumber"))
         {
             return new PhoneNumber(type);
+        } else if(temp.equals("password"))
+        {
+            return new Password(type);
+        }else if(temp.equals("url"))
+        {
+            return new Url(type);
+        }else if(temp.equals("reference"))
+        {
+            return new Reference(type);
         } else {
             return new Text(type);
         }

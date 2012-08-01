@@ -4,7 +4,8 @@
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
       xmlns:objectstore="http://www.mulesoft.org/schema/mule/objectstore"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:spring="http://www.springframework.org/schema/beans"
       version="CE-3.3.0" xsi:schemaLocation="
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/objectstore http://www.mulesoft.org/schema/mule/objectstore/current/mule-objectstore.xsd
@@ -14,19 +15,19 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
     <spring:beans>
-        <spring:bean name="id-store" class="org.mule.util.store.PartitionedPersistentObjectStore"/>
+        <spring:bean name="file-store" class="org.mule.util.store.PartitionedPersistentObjectStore"/>
     </spring:beans>
 
-    <objectstore:config name="default" objectStore-ref="id-store" />
+    <objectstore:config name="default" objectStore-ref="file-store" />
 
-    <boxnet:config name="Boxnet" apiKey="${boxnet.api.key}" restoreAuthTokenFlow="restore" saveAuthTokenFlow="save"/>
+    <boxnet:config name="Boxnet" apiKey="${box.api.key}" restoreAuthTokenFlow="restore" saveAuthTokenFlow="save"/>
 
     <flow name="restore">
-        <objectstore:retrieve key="flowVars['currentUserId']"/>
+        <objectstore:retrieve key="${userid}.box.api.token"/>
     </flow>
 
     <flow name="save">
-        <objectstore:store key="flowVars['currentUserId']" value-ref="#[payload]"/>
+        <objectstore:store key="${userid}.box.api.token" value-ref="#[payload]" overwrite="true"/>
     </flow>
 
     <flow name="Boxnet-init-Authenticate" >

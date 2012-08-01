@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+           xmlns:boxnet="http://www.mulesoft.org/schema/mule/boxnet"
+           xmlns:objectstore="http://www.mulesoft.org/schema/mule/objectstore"
+           xmlns:http="http://www.mulesoft.org/schema/mule/http"
+           xmlns:spring="http://www.springframework.org/schema/beans"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           version="CE-3.3.0" xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/objectstore http://www.mulesoft.org/schema/mule/objectstore/current/mule-objectstore.xsd
+http://www.mulesoft.org/schema/mule/boxnet http://www.mulesoft.org/schema/mule/boxnet/current/mule-boxnet.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <spring:beans>
+        <spring:bean name="empty" class="java.lang.String">
+            <spring:constructor-arg value="empty"/>
+        </spring:bean>
+    </spring:beans>
+
+    <sub-flow name="Write-files-to-Box" >
+        <expression-filter expression="#[payload.size() &gt; 0]" />
+        <enricher target="#[flowVars['box-folder-id']]">
+            <objectstore:retrieve key="${userid}.box.${box.folder}.id" defaultValue-ref="empty"/>
+        </enricher>
+
+        <choice>
+            <when>
+                <expression-filter expression="#[flowVars['box-folder-id']=='empty']" />
+                <enricher target="#[flowVars['folderCreateResult']]">
+                    <boxnet:create-folder parentFolderId="0" folderName="${box.folder}" />
+                </enricher>
+                <set-variable variableName="box-folder-id" value="#[flowVars['folderCreateResult'].folder.folderId]"/>
+                <logger message="Folder ID is: #[flowVars['box-folder-id']]" level="INFO"/>
+                <objectstore:store key="${userid}.box.${box.folder}.id" value-ref="#[flowVars['box-folder-id']]" />
+
+            </when>
+            <otherwise>
+                <logger message="Folder ID already set as: #[flowVars['box-folder-id']]" level="INFO"/>
+            </otherwise>
+        </choice>
+
+        <boxnet:upload-files config-ref="Boxnet" folderId="#[flowVars['box-folder-id']]" >
+            <boxnet:paths ref="#[payload]"/>
+        </boxnet:upload-files>
+    </sub-flow>
+</mule>

@@ -1,7 +1,7 @@
 {
     "name":"Common",
     "namespace":"common",
-    "blocs":[
+    "templates":[
         {
             "name":"Filter",
             "description":"Filter the current message and discard if not a match",
@@ -14,6 +14,19 @@
                     "name":"common.filter.expression",
                     "type":"text",
                     "description":"The filter expression to execute against the message"
+                }
+            ],
+            "actions":[
+                {
+                    "name":"Filter",
+                    "description":"Filter the current message and discard if not a match",
+                    "params":[
+                        {
+                            "name":"common.filter.expression",
+                            "type":"text",
+                            "value":"[ask]"
+                        }
+                    ]
                 }
             ]
         },
@@ -29,6 +42,19 @@
                     "name":"common.save.attachment.types",
                     "type":"text",
                     "description":"a list of one or more content types, this value can use wildcards such as 'image/*'"
+                }
+            ],
+            "actions":[
+                {
+                    "name":"Save Attachments",
+                    "description":"Save Attachments to a local cache and create a list of file URLs",
+                    "params":[
+                        {
+                            "name":"common.save.attachment.types",
+                            "type":"text",
+                            "value":"[ask]"
+                        }
+                    ]
                 }
             ]
         }

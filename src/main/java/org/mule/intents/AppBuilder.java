@@ -9,14 +9,15 @@
  */
 package org.mule.intents;
 
-import org.mule.intents.model.AppDefinition;
-import org.mule.intents.model.Bloc;
-import org.mule.intents.model.BlocConfig;
+import org.mule.intents.model.Action;
 import org.mule.intents.model.ContentType;
 import org.mule.intents.model.Module;
+import org.mule.intents.model.Trigger;
+import org.mule.intents.model.app.ActionConfig;
+import org.mule.intents.model.app.AppDefinition;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,60 +50,66 @@ public class AppBuilder
 
     private Document config;
     private String rawConfig;
-    private BlocRegistry registry;
+    private Registry registry;
     private AppDefinition app;
     private Element flow;
     private Map<String, String> schemaLocations = new HashMap<String, String>();
+    private StringBuilder errors = new StringBuilder();
+    private File appFile;
 
-    public AppBuilder(InputStream appDef, BlocRegistry registry) throws IOException, DocumentException
+
+    public AppBuilder(File appDef, Registry registry) throws IOException, DocumentException
     {
+        this.appFile = appDef;
         this.registry = registry;
         ObjectMapper mapper = new ObjectMapper();
         //This is a safe operation meaning that it is validated against the registry when it
         //is created, no need to perform any extra checks
         app = mapper.readValue(appDef, AppDefinition.class);
         //this could be better isolated, but its a spike
-        app.validate(registry);
-        List<Bloc> blocs = new ArrayList<Bloc>();
-
-        //Lookup Bloc elements for this app
-        Bloc currentBloc = null;
-        for (BlocConfig blocConfig : app.getBlocs())
+        app.validate(registry, errors);
+        if(errors.length() > 0)
         {
-            Bloc bloc = registry.getBloc(blocConfig.getName());
-            if (currentBloc != null)
+            throw new IllegalArgumentException("Application is not configured properly: " + appFile + "\n" + errors);
+        }
+        List<Action> actions = new ArrayList<Action>();
+
+        //Lookup Action elements for this app
+        Action currentAction = null;
+
+        for (ActionConfig actionConfig : app.getActions())
+        {
+            Action action = registry.getAction(actionConfig.getName());
+            if (currentAction != null)
             {
-                if (!bloc.supportsInputTypes(currentBloc.getOutputTypes()))
+                if (!action.getTemplate().supportsInputTypes(currentAction.getTemplate().getOutputTypes()))
                 {
-                    throw new IllegalArgumentException("App is not valid, Bloc " + currentBloc.getName() + " (" + currentBloc.getOutputTypes() + ") not compatible with bloc: " + bloc.getName() + " (" + bloc.getInputTypes() + ")");
+                    throw new IllegalArgumentException("App is not valid, Template " + currentAction.getTemplate().getName() + " (" + currentAction.getTemplate().getOutputTypes() + ") not compatible with template: " + action.getName() + " (" + action.getTemplate().getInputTypes() + ")");
                 }
-                currentBloc = bloc;
+                currentAction = action;
             }
 
-            blocs.add(bloc);
+            actions.add(action);
         }
 
         //Create the Mule config with the mule root element and NS
         config = createMuleConfig();
 
+        Trigger trigger = registry.getTrigger(app.getTrigger().getName());
+        addModuleConfig(trigger.getTemplate().getModule());
+        addTrigger(trigger);
+
         //Process any top-level module configs first
         //We do this loop first since these config elements should appear at the
         //top of the config
-        for (Bloc bloc : blocs)
+        for (Action action : actions)
         {
-            addModuleConfig(bloc.getModule());
+            addModuleConfig(action.getTemplate().getModule());
         }
 
-        for (Bloc bloc : blocs)
+        for (Action action : actions)
         {
-            if (bloc.getIntent().equals("subscribe"))
-            {
-                addTrigger(bloc);
-            }
-            else
-            {
-                addAction(bloc);
-            }
+            addAction(action);
         }
 
         rawConfig = convertConfigToString();
@@ -146,9 +153,9 @@ public class AppBuilder
 
     }
 
-    public void addTrigger(Bloc bloc) throws IOException, DocumentException
+    public void addTrigger(Trigger trigger) throws IOException, DocumentException
     {
-        Document snippet = bloc.loadSnippet();
+        Document snippet = trigger.getTemplate().loadSnippet();
         addNamespaces(snippet);
         addSchemaLocations(snippet);
 
@@ -165,12 +172,12 @@ public class AppBuilder
             }
         }
 
-        addBlockInterceptor(bloc, flow);
+        addInterceptor(trigger, flow);
     }
 
-    public void addAction(Bloc bloc) throws IOException, DocumentException
+    public void addAction(Action action) throws IOException, DocumentException
     {
-        Document snippet = bloc.loadSnippet();
+        Document snippet = action.getTemplate().loadSnippet();
         addNamespaces(snippet);
         addSchemaLocations(snippet);
         for (Object o : snippet.getRootElement().content())
@@ -183,19 +190,19 @@ public class AppBuilder
                 {
                     Element element = flow.addElement("flow-ref");
                     element.addAttribute("name", e.attribute("name").getValue());
-                    addBlockInterceptor(bloc, flow);
+                    addInterceptor(action, flow);
                 }
             }
         }
     }
 
-    protected void addBlockInterceptor(Bloc bloc, Element e)
+    protected void addInterceptor(Action action, Element e)
     {
         Element comp = e.addElement("component");
         Element obj = comp.addElement("singleton-object");
         obj.addAttribute("class", "org.mule.intents.TypeChecker");
-        obj.addElement("property").addAttribute("key", "types").addAttribute("value", typesToString(bloc.getOutputTypes()));
-        obj.addElement("property").addAttribute("key", "previousBloc").addAttribute("value", bloc.getName());
+        obj.addElement("property").addAttribute("key", "types").addAttribute("value", typesToString(action.getTemplate().getOutputTypes()));
+        obj.addElement("property").addAttribute("key", "previousTemplate").addAttribute("value", action.getName());
     }
 
     private String typesToString(List<String> types)
@@ -213,9 +220,10 @@ public class AppBuilder
     public Properties getAllParams() throws IOException
     {
         Properties params = new Properties();
-        for (BlocConfig blocConfig : app.getBlocs())
+        params.putAll(app.getTrigger().getParams());
+        for (ActionConfig actionConfig : app.getActions())
         {
-            params.putAll(blocConfig.getParams());
+            params.putAll(actionConfig.getParams());
         }
 
         return params;

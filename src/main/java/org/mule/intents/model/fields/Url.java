@@ -9,14 +9,16 @@
  */
 package org.mule.intents.model.fields;
 
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
 /**
  * TODO
  */
-public final class Boolean extends FieldType
+public class Url extends FieldType
 {
-    private String type;
-
-    public Boolean(String type)
+    public Url(String type)
     {
         super(type);
     }
@@ -30,14 +32,15 @@ public final class Boolean extends FieldType
     @Override
     public boolean isValid(String value)
     {
-        if(value.toLowerCase().equals("true") || value.toLowerCase().equals("false"))
+        try
         {
-            return true;
+            new URL(value);
         }
-        else if(value.toLowerCase().equals("yes") || value.toLowerCase().equals("no"))
+        catch (MalformedURLException e)
         {
-            return true;
+            return false;
         }
-        return false;
+
+        return true;
     }
 }

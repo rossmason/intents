@@ -4,15 +4,17 @@
     "shared-params":[
         {
             "name":"freshbooks.authToken",
-            "description":"Your security token for accessing the Freshbooks API"
+            "description":"Your security token for accessing the Freshbooks API",
+            "type":"password"
         } ,
         {
             "name":"freshbooks.apiUrl",
             "description":"The API URL to use",
+            "type":"url",
             "default":"https://mulesoft.freshbooks.com/api/2.1/xml-in"
         }
     ],
-    "blocs":[
+    "templates":[
         {
             "name":"FreshBooks Client",
             "description":"Work with client entities in Freshbooks",

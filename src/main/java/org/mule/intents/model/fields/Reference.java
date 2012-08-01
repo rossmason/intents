@@ -9,14 +9,13 @@
  */
 package org.mule.intents.model.fields;
 
+
 /**
  * TODO
  */
-public final class Boolean extends FieldType
+public class Reference extends FieldType
 {
-    private String type;
-
-    public Boolean(String type)
+    public Reference(String type)
     {
         super(type);
     }
@@ -30,14 +29,6 @@ public final class Boolean extends FieldType
     @Override
     public boolean isValid(String value)
     {
-        if(value.toLowerCase().equals("true") || value.toLowerCase().equals("false"))
-        {
-            return true;
-        }
-        else if(value.toLowerCase().equals("yes") || value.toLowerCase().equals("no"))
-        {
-            return true;
-        }
-        return false;
+        return true;
     }
 }

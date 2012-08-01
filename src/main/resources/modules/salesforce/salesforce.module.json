@@ -18,10 +18,10 @@
             "description":"Your security token for accessing the Salesforce API"
         }
     ],
-    "blocs":[
+    "templates":[
         {
-            "name":"Salesforce Subscribe",
-            "description":"Subscribe to a Salesforce topic throw the streaming API",
+            "name":"Salesforce Streaming",
+            "description":"Receive data via the streaming API",
             "intent":"subscribe",
             "output-types":["application/mule.message+map"],
             "snippet-uri":"salesforce-subscribe-topic.xml.snippet",
@@ -30,6 +30,18 @@
                     "name":"salesforce.topic",
                     "type":"text",
                     "description":"The topic name created in Salesforce to listen on"
+                }
+            ],
+            "triggers":[
+                {
+                    "name":"Subscribe to topic",
+                    "description":"Subscribe to a Salesforce topic throw the streaming API",
+                    "params":[
+                        {
+                            "name":"salesforce.topic",
+                            "type":"text"
+                        }
+                    ]
                 }
             ]
         },
@@ -50,6 +62,12 @@
                     "name":"salesforce.query",
                     "type":"text",
                     "description":"The select query that defines what data will be received on a topic"
+                }
+            ],
+            "actions":[
+                {
+                    "name":"Create Topic",
+                    "description":"Create a real-time Salesforce topic"
                 }
             ]
         }

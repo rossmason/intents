@@ -2,7 +2,7 @@
     "name":"Gmail Photos to Box",
     "app-version" : "1.0",
     "platform-version" : "CE-3.3",
-    "blocs":[
+    "templates":[
         "Gmail Subscribe",
         "Save Attachments",
         "Box.Net write Files"

@@ -2,37 +2,36 @@
     "name":"Gmail Photos to Box",
     "app-version" : "1.0",
     "platform-version" : "CE-3.3.0",
-    "blocs":[
+    "trigger":
+    {
+        "name":"gmail:All New Email",
+        "params":{
+            "gmail.username":"ibeanstestinbox%40gmail.com",
+            "gmail.password":"ibeans0101"
+        }
+    },
+    "actions":[
         {
-            "name":"Gmail Read Email",
-            "params":{
-                "gmail.username":"ibeanstestinbox%40gmail.com",
-                "gmail.password":"ibeans0101"
-            }
-        },
-        {
-            "name":"Save Attachments",
+            "name":"common:Save Attachments",
             "params":{
                 "common.save.attachment.types":"image/*"
             }
         },
         {
-            "name":"Box.Net write Files",
+            "name":"box:Write Files",
             "params":{
-                "boxnet.api.key":"9hq3yujx6crrkazks12e25316hgxj1bq"
+                "box.api.key":"9hq3yujx6crrkazks12e25316hgxj1bq"
             }
         },
         {
-            "name":"Send SMS",
+            "name":"twilio:Send SMS",
             "params":{
                 "twilio.phoneNumber":"+16502674219",
                 "twilio.authToken":"31b52503b3a1623cd91d54e04f656dac",
                 "twilio.accountSid":"AC9c46e1957e67224fa41c41c141b2c8b5",
                 "twilio.toPhoneNumber":"+14152901974",
                 "twilio.message":"You have new photos in your Box!"
-
             }
-
         }
     ]
 }

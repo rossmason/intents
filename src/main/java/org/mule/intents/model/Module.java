@@ -32,7 +32,7 @@ public class Module implements Validatable
     private String namespace;
     @JsonProperty("shared-config-snippet-uri")
     private URI configUri;
-    private List<Bloc> blocs = new ArrayList<Bloc>();
+    private List<Template> templates = new ArrayList<Template>();
     @JsonProperty("shared-contents")
     private List<Content> contents = new ArrayList<Content>();
     @JsonProperty("shared-params")
@@ -64,14 +64,14 @@ public class Module implements Validatable
         this.namespace = namespace;
     }
 
-    public List<Bloc> getBlocs()
+    public List<Template> getTemplates()
     {
-        return blocs;
+        return templates;
     }
 
-    public void setBlocs(List<Bloc> blocs)
+    public void setTemplates(List<Template> templates)
     {
-        this.blocs = blocs;
+        this.templates = templates;
     }
 
     public URI getConfigUri()
@@ -136,9 +136,9 @@ public class Module implements Validatable
             errors.append("A Module must have an namespace. Definition is: ").append(getDefinitionFile()).append("\n");
         }
 
-        if (blocs.size() == 0)
+        if (templates.size() == 0)
         {
-            errors.append("A Module must have at least one Bloc. Definition is: ").append(getDefinitionFile()).append("\n");
+            errors.append("A Module must have at least one Template. Definition is: ").append(getDefinitionFile()).append("\n");
         }
 
     }

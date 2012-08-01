@@ -36,12 +36,11 @@ public class MuleIntents
             }
             File appFile = new File(args[0]);
 
-            BlocRegistry registry = new BlocRegistry(new File("src/main/resources/blocs"));
+            Registry registry = new Registry(new File("src/main/resources/modules"));
             if(!appFile.exists()) {
                 throw new FileNotFoundException("Cannot find the app definition file at: " + appFile.getAbsolutePath());
             }
-            fis = new FileInputStream(appFile);
-            AppBuilder builder = new AppBuilder(fis, registry);
+            AppBuilder builder = new AppBuilder(appFile, registry);
 
             String rawConfig = builder.getRawConfig();
 
@@ -53,6 +52,7 @@ public class MuleIntents
             Properties params = builder.getAllParams();
             //TODO where should this param live
             params.setProperty("http.port", "8081");
+            params.setProperty("userid", "1");
             MuleContext muleContext = muleContextFactory.createMuleContext(configBuilder, params);
             muleContext.start();
         }

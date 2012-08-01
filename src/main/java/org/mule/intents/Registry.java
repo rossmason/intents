@@ -10,9 +10,11 @@
 package org.mule.intents;
 
 import org.mule.api.MuleMessage;
-import org.mule.intents.model.Bloc;
+import org.mule.intents.model.Action;
 import org.mule.intents.model.ContentType;
 import org.mule.intents.model.Module;
+import org.mule.intents.model.Template;
+import org.mule.intents.model.Trigger;
 import org.mule.util.FileUtils;
 
 import java.io.File;
@@ -30,20 +32,22 @@ import org.codehaus.jackson.map.ObjectMapper;
 /**
  * TODO
  */
-public class BlocRegistry
+public class Registry
 {
-    private Map<String, Bloc> blocs = new HashMap<String, Bloc>();
+    private Map<String, Template> templates = new HashMap<String, Template>();
     private Map<String, Module> modules = new HashMap<String, Module>();
+    private Map<String, Trigger> triggers = new HashMap<String, Trigger>();
+    private Map<String, Action> actions = new HashMap<String, Action>();
     private Map<String, ContentType> contentTypes = new HashMap<String, ContentType>();
     private File rootDirectory;
     private StringBuilder errors = new StringBuilder();
 
-    public BlocRegistry(File root) throws Exception
+    public Registry(File root) throws Exception
     {
         rootDirectory = root;
         addCommonDataTypes();
         ObjectMapper mapper = new ObjectMapper();
-        //File root = new File("src/main/resources/blocs");
+        //File root = new File("src/main/resources/templates");
         Collection<File> files = (Collection<File>)FileUtils.listFiles(root, new String[]{"module.json"}, true);
         for (File file : files)
         {
@@ -62,19 +66,27 @@ public class BlocRegistry
         }
         if(errors.length() > 0)
         {
-            throw new IllegalArgumentException("There were errors parsing the bloc registry: \n" + errors.toString());
+            throw new IllegalArgumentException("There were errors parsing the template registry: \n" + errors.toString());
         }
     }
 
-    public void addBloc(Bloc bloc)
+    public void addTemplate(Template template)
     {
-        bloc.validate(errors);
-        if(blocs.get(bloc.getName())!=null)
+        template.validate(errors);
+        if(templates.get(template.getName())!=null)
         {
-            throw new IllegalArgumentException("Bloc with name already exists: " + bloc.getName());
+            throw new IllegalArgumentException("Template with name already exists: " + template.getName());
         }
 
-        blocs.put(bloc.getName(), bloc);
+        templates.put(template.getName(), template);
+        for (Trigger trigger : template.getTriggers())
+        {
+            triggers.put(trigger.getQualifiedName(), trigger);
+        }
+        for (Action action : template.getActions())
+        {
+            actions.put(action.getQualifiedName(), action);
+        }
     }
 
     public void addModule(Module module)
@@ -87,10 +99,10 @@ public class BlocRegistry
 
         modules.put(module.getName(), module);
 
-        for (Bloc bloc : module.getBlocs())
+        for (Template template : module.getTemplates())
         {
-            bloc.setModule(module);
-            addBloc(bloc);
+            template.setModule(module);
+            addTemplate(template);
         }
     }
     
@@ -107,9 +119,9 @@ public class BlocRegistry
         contentTypes.put(contentType.getType(), contentType);
     }
 
-    public Bloc getBloc(String name)
+    public Template getTemplate(String name)
     {
-        return blocs.get(name);
+        return templates.get(name);
     }
 
     public Module getModule(String name)
@@ -117,20 +129,20 @@ public class BlocRegistry
         return modules.get(name);
     }
 
-    public List<Bloc> getBlocsThatSupportTypes(List<String> types)
+    public List<Template> getTemplatesThatSupportTypes(List<String> types)
     {
-        List<Bloc> supportedBlocs = new ArrayList<Bloc>();
-        for (Bloc bloc : blocs.values())
+        List<Template> supportedTemplates = new ArrayList<Template>();
+        for (Template template : templates.values())
         {
             for (String type : types)
             {
-                if(bloc.supportsInputType(type))
+                if(template.supportsInputType(type))
                 {
-                    supportedBlocs.add(bloc);
+                    supportedTemplates.add(template);
                 }
             }
         }
-        return supportedBlocs;
+        return supportedTemplates;
     }
 
     public File getRootDirectory()
@@ -145,8 +157,18 @@ public class BlocRegistry
     
     protected void addCommonDataTypes() throws URISyntaxException
     {
-        addContentType(new ContentType("application/mule.message",
+        addContentType(new ContentType("application/vnd.mule.message",
                 "Based content type for org.mule.api.MuleMessage, typically a content hit will be added to the end i.e. 'application/mule-message+email'",
                 new URI(MuleMessage.class.getName()), "class"));
+    }
+
+    public Trigger getTrigger(String name)
+    {
+        return triggers.get(name);
+    }
+
+    public Action getAction(String name)
+    {
+        return actions.get(name);
     }
 }

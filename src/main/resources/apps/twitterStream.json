@@ -2,13 +2,12 @@
     "name":"Twitter test",
     "app-version" : "1.0",
     "platform-version" : "CE-3.3.0",
-    "blocs":[
+    "trigger":[
         {
-            "name":"Subscribe to user stream",
+            "name":"Tweets by you",
             "params":{
                 "twitter.accessToken":"84320291-4HLhQ6ABL3PlW2T6MWXPL0IicuvhqyUFEdSrl55g",
-                "twitter.accessSecret":"KU3CDd8NYyZS5xUlrJK3nMpiR38lHFeUlnc4GesgyBQ",
-                "twitter.eventType":"New Mention"
+                "twitter.accessSecret":"KU3CDd8NYyZS5xUlrJK3nMpiR38lHFeUlnc4GesgyBQ"
             }
         }
     ]

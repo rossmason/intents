@@ -9,10 +9,20 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
     <imaps:connector name="IMAP" mailboxFolder="${gmail.label}" validateConnections="true"
                      deleteReadMessages="${gmail.archive.messages}"/>
 
+    <expression-filter expression="regex([${gmail.filter}].+) | message.outboundProperties['inbound.subject'] ~= '[${gmail.filter}].+'" name="gmail-search-filter"/>
+
+    <expression-filter expression="outboundProperties['inbound.fromaddress'] == ${gmail.filter})" name="gmail-from-filter"/>
+
+    <expression-filter expression="true" name="gmail-no-filter"/>
+
+
     <flow name="main">
         <imaps:inbound-endpoint host="imap.gmail.com" port="993" user="${gmail.username}"
                                 password="${gmail.password}"
-                                responseTimeout="10000" connector-ref="IMAP" />
+                                responseTimeout="10000" connector-ref="IMAP">
+            <filter ref="${gmail.filter.name}"/>
+
+        </imaps:inbound-endpoint>
     </flow>
 
 </mule>

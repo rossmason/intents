@@ -33,6 +33,6 @@ public class Email extends FieldType
     @Override
     public boolean isValid(String value)
     {
-        return email.isValid(value);
+        return true; // TODO we currently have to escape email addresses with %40 email.isValid(value);
     }
 }

@@ -18,7 +18,7 @@
             "description":"Your Twilio Auth token issued from the Twilio App sign up process"
         }
     ],
-    "blocs":[
+    "templates":[
         {
             "name":"Send SMS",
             "description":"Send an SMS to a phone with  Twilio",
@@ -37,6 +37,24 @@
                     "description":"The number to send the SMS message to",
                     "default":"#[payload]",
                     "type":"text"
+                }
+            ],
+            "actions":[
+                {
+                    "name":"Send SMS",
+                    "description":"Send an SMS to a phone with  Twilio",
+                    "params":[
+                        {
+                            "name":"twilio.toPhoneNumber",
+                            "type":"phoneNumber",
+                            "value":"[ask]"
+                        },
+                        {
+                            "name":"twilio.message",
+                            "value":"#[payload]",
+                            "type":"text"
+                        }
+                    ]
                 }
             ]
         }

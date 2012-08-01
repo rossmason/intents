@@ -26,13 +26,15 @@ import org.dom4j.DocumentHelper;
 /**
  * TODO
  */
-public class Bloc implements Validatable
+public class Template implements Validatable
 {
     private String name;
     private String description;
     private String intent;
     private List<Param> params = new ArrayList<Param>();
     private List<Content> contents = new ArrayList<Content>();
+    private List<Trigger> triggers = new ArrayList<Trigger>();
+    private List<Action> actions = new ArrayList<Action>();
 
     @JsonProperty("input-types")
     private List<String> inputTypes = new ArrayList<String>();
@@ -51,23 +53,23 @@ public class Bloc implements Validatable
     {
         if (name == null)
         {
-            errors.append("A Bloc must have a name. Definition is: ").append(getDefinitionFile()).append("\n");
+            errors.append("A Template must have a name. Definition is: ").append(getDefinitionFile()).append("\n");
         }
 
         if (intent == null)
         {
-            errors.append("A Bloc must have an intent. Definition is: ").append(getDefinitionFile()).append("\n");
+            errors.append("A Template must have an intent. Definition is: ").append(getDefinitionFile()).append("\n");
         }
 
 
         if (inputTypes.size() == 0 && !intent.equals("subscribe"))
         {
-            errors.append("A Bloc must have at least one input data type. Definition is: ").append(getDefinitionFile()).append("\n");
+            errors.append("A Template must have at least one input data type. Definition is: ").append(getDefinitionFile()).append("\n");
         }
 
         if (outputTypes.size() == 0)
         {
-            errors.append("A Bloc must have at least one output data type. Definition is: ").append(getDefinitionFile()).append("\n");
+            errors.append("A Template must have at least one output data type. Definition is: ").append(getDefinitionFile()).append("\n");
         }
 
         for (Param param : params)
@@ -75,6 +77,15 @@ public class Bloc implements Validatable
             if(param.getType()==null) {
                 errors.append("A Param must have a type defined. Param is: ").append(param.getName()).append(" Definition is: ").append(getDefinitionFile()).append("\n");
             }
+        }
+
+        for (Trigger trigger : triggers)
+        {
+            trigger.setTemplate(this);
+        }
+        for (Action action : actions)
+        {
+            action.setTemplate(this);
         }
     }
 
@@ -161,6 +172,7 @@ public class Bloc implements Validatable
     public void setModule(Module module)
     {
         this.module = module;
+        params.addAll(module.getParams());
     }
 
     public void setOutputTypes(List<String> outputTypes)
@@ -233,4 +245,25 @@ public class Bloc implements Validatable
         File f = new File(module.getDefinitionFile().getParentFile(), getSnippetUri());
         return DocumentHelper.parseText(IOUtils.toString(new FileInputStream(f)));
     }
+
+    public List<Trigger> getTriggers()
+    {
+        return triggers;
+    }
+
+    public void setTriggers(List<Trigger> triggers)
+    {
+        this.triggers = triggers;
+    }
+
+    public List<Action> getActions()
+    {
+        return actions;
+    }
+
+    public void setActions(List<Action> actions)
+    {
+        this.actions = actions;
+    }
+
 }

@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * TODO
  */
-public class TypeChecker implements Callable, Initialisable
+public class    TypeChecker implements Callable, Initialisable
 {
     /**
      * logger used by this class
@@ -31,7 +31,7 @@ public class TypeChecker implements Callable, Initialisable
     protected static final Log logger = LogFactory.getLog(TypeChecker.class);
 
     private String types;
-    private String bloc;
+    private String template;
     private WildcardFilter filter;
 
 
@@ -45,14 +45,14 @@ public class TypeChecker implements Callable, Initialisable
         this.types = types;
     }
 
-    public String getBloc()
+    public String getTemplate()
     {
-        return bloc;
+        return template;
     }
 
-    public void setBloc(String bloc)
+    public void setTemplate(String template)
     {
-        this.bloc = bloc;
+        this.template = template;
     }
 
     public void initialise() throws InitialisationException
@@ -79,7 +79,7 @@ public class TypeChecker implements Callable, Initialisable
         MimeType mimeType = new MimeType(contentType);
         if (!filter.accept(mimeType.getPrimaryType() + "/" + mimeType.getSubType()))
         {
-            throw new IllegalArgumentException("The current message content type: " + contentType + " is not compatible with return data-type for bloc: " + getBloc() + ". This Bloc output data type should be: " + getTypes());
+            throw new IllegalArgumentException("The current message content type: " + contentType + " is not compatible with return data-type for template: " + getTemplate() + ". This Template output data type should be: " + getTypes());
         }
 
         return eventContext.getMessage();

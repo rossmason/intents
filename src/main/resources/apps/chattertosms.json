@@ -2,24 +2,25 @@
     "name":"Chatter to SMS",
     "app-version" : "1.0",
     "platform-version" : "CE-3.3.0",
-    "blocs":[
+    "trigger":
+    {
+        "name":"sfdc:Subscribe to topic",
+        "params":{
+            "salesforce.username":"emiliano.lesende@mule.stream",
+            "salesforce.password":"muleftw1",
+            "salesforce.securityToken" : "oWCwniCGFl3VkrdDB2kaAr37k",
+            "salesforce.topic" : "NewsFeedStream"
+        }
+    },
+    "actions":[
         {
-            "name":"Salesforce Subscribe",
-            "params":{
-                "salesforce.username":"emiliano.lesende@mule.stream",
-                "salesforce.password":"muleftw1",
-                "salesforce.securityToken" : "oWCwniCGFl3VkrdDB2kaAr37k",
-                "salesforce.topic" : "NewsFeedStream"
-            }
-        },
-        {
-            "name":"Filter",
+            "name":"common:Filter",
             "params":{
                 "common.filter.expression":"regex(now)"
             }
         },
         {
-            "name":"Send SMS",
+            "name":"twilio:Send SMS",
             "params":{
                 "twilio.phoneNumber":"+16502674219",
                 "twilio.authToken":"31b52503b3a1623cd91d54e04f656dac",
