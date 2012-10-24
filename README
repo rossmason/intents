@@ -1,10 +1,35 @@
-# Intents
-## Save
+GETTING STARTED
+=================
 
-## Publish
+To try it out in your IDE:
 
-## Trigger
+Create and application with runnable class: org.mule.intents.MuleIntents
 
-### Data Formats
+pass in the path of an app definition as an Arg i.e.  src/main/resources/apps/smstocall.json
 
-- application/mulemessage+email
+When you run this the following things happen:
+
+A org.mule.intents.Registry is instantiated. This looks in 'src/main/resources/modules' and iterates through each of the modules
+
+Then a new org.mule.intents.AppBuilder is created taking the location of the appFile and the registry in.   This builder does the magic of creating a runnable Mule Configuration XML from the appFile and the modules in the Registry.
+
+The AppBuilder returns a Mule Xml Config that gets written to the logs and then an embedded Mule instance is started inside the MuleIntents runnable class.
+
+You may notice the mule-intents-server-config.xml and mule-intents.properties.  These are used when loading the embedded Mule instance.  The config, creates a default object store (used to store OAuth credentials) the user id is used as a qualifier for objects stored.
+
+Concepts
+=======
+
+There are some concepts to understand here:
+
+App - The app file describes an application in JSON format.  An app must start with a Trigger and must have one or more actions.
+
+Trigger - something that will receive a message and trigger and application. Examples would be: receive SMS, subscribe to SFDC topic, receive Email. A Trigger basically defines an inbound endpoint and associated configuration.
+
+Action -Once an App is triggered, one or more actions can be defined in sequence to act on the message received.  For example in the gmailtobox app there are 3 actions: 1) Save image Attachments from the email, 2) write those attachments to box.com, 3) send and sms notifying the user that there are new images in his box.
+
+BTW this is where we are more powerful than IFTTT, since you can only have one action (and they don't support attachment processing)
+
+Module - meta data and Mule XML snippets that describe Triggers and actions i.e. Send SMS, Receive Email.
+
+Templates - These are well-formed Mule XML config files that are associated with either one Trigger or one Action. Templates have property placeholders that are used to inject the parameters defined in the Module's meta data.
