@@ -26,9 +26,8 @@ App - The app file describes an application in JSON format.  An app must start w
 
 Trigger - something that will receive a message and trigger and application. Examples would be: receive SMS, subscribe to SFDC topic, receive Email. A Trigger basically defines an inbound endpoint and associated configuration.
 
-Action -Once an App is triggered, one or more actions can be defined in sequence to act on the message received.  For example in the gmailtobox app there are 3 actions: 1) Save image Attachments from the email, 2) write those attachments to box.com, 3) send and sms notifying the user that there are new images in his box.
+Action -Once an App is triggered, one or more actions can be defined in sequence to act on the message received.  For example in the gmailtobox app there are 3 actions: 1) Save image Attachments from the email, 2) write those attachments to box.com, 3) send and sms notifying the user that there are new images in his box. Note that actions can be chained together, the input and output mime types are used to validate that one action is compatible with another.
 
-BTW this is where we are more powerful than IFTTT, since you can only have one action (and they don't support attachment processing)
 
 Module - meta data and Mule XML snippets that describe Triggers and actions i.e. Send SMS, Receive Email.
 
